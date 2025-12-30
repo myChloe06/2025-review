@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --bg-dark: #050505;
+    --card-bg: #111;
+    --card-border: #333;
+    --neon-blue: #00f3ff;
+    --neon-pink: #bc13fe;
+    --neon-green: #0aff60;
+    --neon-gold: #ffd700;
+    --text-main: #eee;
+    --text-dim: #888;
+  }
+  body {
+    background-color: var(--bg-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace, "微软雅黑", sans-serif;
+    color: var(--text-main);
+    padding: 20px 0;
+  }
+  .card-container {
+    width: 400px;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    position: relative;
+    padding: 25px;
+    box-shadow: 0 0 40px rgba(188, 19, 254, 0.15); /* 紫色氛围光 */
+    background-image: 
+      linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+  }
+  
+  /* 顶部装饰条 */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--text-dim);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+  .year-tag {
+    background: var(--neon-blue);
+    color: #000;
+    font-weight: bold;
+    padding: 2px 8px;
+    font-size: 14px;
+    box-shadow: 0 0 10px var(--neon-blue);
+  }
+  .system-id {
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* 🎵 音乐播放器组件 */
+  .music-player {
+    border: 1px solid var(--neon-green);
+    background: rgba(0, 20, 0, 0.5);
+    padding: 8px 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--neon-green);
+    border-radius: 4px;
+  }
+  .music-icon { font-size: 14px; margin-right: 8px; animation: pulse 2s infinite;}
+  .music-info { flex: 1; display: flex; justify-content: space-between;}
+  .music-bar { letter-spacing: -2px; opacity: 0.7; }
+  
+  @keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; text-shadow: 0 0 5px var(--neon-green); }
+    100% { opacity: 0.5; }
+  }
+
+  /* 个人信息区 */
+  .profile-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .avatar-box {
+    width: 70px;
+    height: 70px;
+    border: 2px solid var(--neon-pink);
+    margin-right: 15px;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+  }
+  .avatar-img { font-size: 35px; }
+  
+  .info-box h1 {
+    margin: 0;
+    font-size: 22px;
+    text-shadow: 2px 2px 0px var(--neon-pink);
+    letter-spacing: -1px;
+    color: #fff;
+  }
+  .info-box .level {
+    color: var(--neon-green);
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  .tags { margin-top: 6px; }
+  .tag {
+    font-size: 10px;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    padding: 2px 5px;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+
+  /* 标题通用样式 */
+  .section-header {
+    font-size: 13px;
+    color: var(--neon-gold);
+    border-bottom: 1px dashed var(--card-border);
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 20px;
+  }
+  /* 第一个标题不需要top margin */
+  .stats-grid .section-header { margin-top: 0; }
+
+  /* 进度条区域 */
+  .stat-item { margin-bottom: 6px; }
+  .stat-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 2px;
+    color: #aaa;
+  }
+  .bar-bg {
+    height: 5px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 2px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--neon-blue);
+    box-shadow: 0 0 8px var(--neon-blue);
+  }
+
+  /* 掉落物清单 (现在移到了中间) */
+  .loot-box {
+    background: #080808;
+    border: 1px solid #333;
+    padding: 10px;
+    font-size: 11px;
+    color: #ccc;
+    line-height: 1.6;
+    font-family: monospace;
+  }
+  .loot-item { display: block; }
+  .loot-item::before { content: ">> "; color: var(--text-dim); }
+  .highlight { color: var(--neon-gold); font-weight: bold; }
+  .highlight-purple { color: var(--neon-pink); font-weight: bold; }
+
+  /* 十大勋章区域 */
+  .badges-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .badge-row {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 8px;
+    border-left: 2px solid #555;
+    transition: all 0.3s;
+  }
+  /* 特殊颜色标记 */
+  .badge-row.gold { border-left-color: var(--neon-gold); background: rgba(255, 215, 0, 0.08); }
+  .badge-row.purple { border-left-color: var(--neon-pink); }
+  .badge-row.green { border-left-color: var(--neon-green); }
+  .badge-row.red { border-left-color: #ff4444; } 
+  
+  .b-icon { font-size: 14px; margin-right: 8px; width: 18px; text-align: center;}
+  .b-info { flex: 1; }
+  .b-title { font-size: 12px; font-weight: bold; color: #fff; margin-bottom: 2px;}
+  .b-desc { font-size: 10px; color: #999; line-height: 1.2;}
+
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 10px;
+    color: #444;
+    font-weight: bold;
+    letter-spacing: 3px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="card-container">
+  <div class="top-bar">
+    <div class="year-tag">YEAR: 2025</div>
+    <div class="system-id">PLAYER_LOG_XIAOMO</div>
+  </div>
+
+  <div class="music-player">
+    <span class="music-icon">▶</span>
+    <div class="music-info">
+      <span>BGM: 逍遥一客 - Bo peep</span>
+      <span class="music-bar">|||||||||||||||..</span>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <div class="avatar-box">
+      <div class="avatar-img">👾</div> 
+    </div>
+    <div class="info-box">
+      <h1>ID: 小mo</h1>
+      <div class="level">LV.24 ► LV.25 <span style="font-size:10px;color:#888">(觉醒中)</span></div>
+      <div class="tags">
+        <span class="tag">J里P气</span>
+        <span class="tag">实战探索</span>
+        <span class="tag">AI学徒</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="section-header">/// STATUS 状态面板</div>
+    <div class="stat-item">
+      <div class="stat-label"><span>技能复利 (AI/知识库/写作)</span><span>80%</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:80%; background:var(--neon-blue)"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label"><span>人际复利 (涛哥/阿明哥/200+好友)</span><span>85%</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:85%; background:var(--neon-pink)"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label"><span>金钱复利 (副业尝试)</span><span>30%</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:30%; background:var(--neon-gold)"></div></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label"><span>知行合一 (执行力加载中)</span><span>40%</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:40%; background:var(--neon-green)"></div></div>
+    </div>
+  </div>
+
+  <div class="loot-section">
+    <div class="section-header">/// RARE DROPS 稀有掉落</div>
+    <div class="loot-box">
+      <div class="loot-item"><span class="highlight">[SSR] 全球唯一错版To签</span> (涛哥亲笔)</div>
+      <div class="loot-item"><span class="highlight-purple">[SR] 涛哥 / 阿明哥的进一步链接</span></div>
+      <div class="loot-item">[Social] 200+ 新好友</div>
+      <div class="loot-item">[Skill] AI工具使用技能</div>
+      <div class="loot-item">[Memory] 独自旅行的自由感</div>
+    </div>
+  </div>
+
+  <div class="badges-list">
+    <div class="section-header">/// 10 ACHIEVEMENTS 十大勋章</div>
+    <div class="badges-container">
+      
+      <div class="badge-row gold">
+        <div class="b-icon">🤝</div>
+        <div class="b-info">
+          <div class="b-title">向上社交破壁人</div>
+          <div class="b-desc">从默默无闻听众到积极志愿者，8场线下局的蜕变</div>
+        </div>
+      </div>
+
+      <div class="badge-row gold">
+        <div class="b-icon">🐺</div>
+        <div class="b-info">
+          <div class="b-title">孤狼行者</div>
+          <div class="b-desc">独自前往惠州/杭州旅行，享受随机性与掌控感</div>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="b-icon">🧠</div>
+        <div class="b-info">
+          <div class="b-title">长期主义潜伏者</div>
+          <div class="b-desc">208小时播客输入，认知腌制入味</div>
+        </div>
+      </div>
+      
+      <div class="badge-row">
+        <div class="b-icon">🤖</div>
+        <div class="b-info">
+          <div class="b-title">AI魔法学徒</div>
+          <div class="b-desc">从DeepSeek闲聊，进化到用AI写代码/搭工作流/做视频</div>
+        </div>
+      </div>
+
+      <div class="badge-row purple">
+        <div class="b-icon">🏆</div>
+        <div class="b-info">
+          <div class="b-title">百万操盘手</div>
+          <div class="b-desc">亲手操盘百万级项目，在高压中验证硬核交付能力</div>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="b-icon">💰</div>
+        <div class="b-info">
+          <div class="b-title">闭环初跑者</div>
+          <div class="b-desc">虚拟资料+CPS单日变现几百，验证“信息差=钱”</div>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="b-icon">❤️</div>
+        <div class="b-info">
+          <div class="b-title">情绪回血师</div>
+          <div class="b-desc">撸猫/脱口秀/看海，崩溃后能迅速回血</div>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="b-icon">🏠</div>
+        <div class="b-info">
+          <div class="b-title">家庭话语权</div>
+          <div class="b-desc">带父母旅行看海，用行动和底气拿回生活决策权</div>
+        </div>
+      </div>
+
+      <div class="badge-row">
+        <div class="b-icon">🗣️</div>
+        <div class="b-info">
+          <div class="b-title">费曼技巧践行</div>
+          <div class="b-desc">输出倒逼输入，用涛哥/生财理论成功把男友拉进生财</div>
+        </div>
+      </div>
+
+      <div class="badge-row red">
+        <div class="b-icon">🌙</div>
+        <div class="b-info">
+          <div class="b-title">狼狈的冲锋者</div>
+          <div class="b-desc">凌晨3:30赶PPT的痛，深刻理解能力边界与时薪铁律</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    GAME SAVED. READY FOR 2026.
+  </div>
+</div>
+
+</body>
+</html>

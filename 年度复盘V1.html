@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --bg-dark: #0a0c10;
+    --card-bg: #161b22;
+    --neon-blue: #58a6ff;
+    --neon-green: #2ea043;
+    --neon-purple: #bc8cff;
+    --neon-orange: #d29922;
+    --text-main: #c9d1d9;
+    --text-dim: #8b949e;
+    --border: #30363d;
+  }
+  body {
+    background-color: var(--bg-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    color: var(--text-main);
+  }
+  .card-container {
+    width: 375px; /* Mobile width */
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Pixel Art Borders */
+  .pixel-corners {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .pixel-corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--neon-blue);
+  }
+  .tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+  .tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+  .bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+  .br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 15px;
+  }
+  .avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+    border-radius: 8px; /* Slightly rounded pixel look */
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: 0 0 10px rgba(188, 140, 255, 0.4);
+  }
+  .player-info h1 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .player-info .level {
+    font-size: 12px;
+    color: var(--neon-green);
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .player-info .job {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .keyword-tag {
+    display: inline-block;
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--neon-blue);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    margin-top: 4px;
+    border: 1px solid rgba(88, 166, 255, 0.3);
+  }
+
+  /* Drops Grid */
+  .drops-section {
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 12px;
+    background: var(--neon-orange);
+    margin-right: 6px;
+  }
+  .drop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .drop-item {
+    background: rgba(48, 54, 61, 0.5);
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+  }
+  .drop-label { color: var(--text-dim); margin-bottom: 2px; font-size: 10px; }
+  .drop-val { color: #fff; font-weight: 600; }
+  .ssr { color: var(--neon-orange); text-shadow: 0 0 5px rgba(210, 153, 34, 0.5); }
+
+  /* Moments */
+  .moments-list {
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .moment-row {
+    display: flex;
+    margin-bottom: 6px;
+    align-items: flex-start;
+  }
+  .moment-icon { margin-right: 8px; min-width: 16px; text-align: center; }
+  
+  /* Achievements */
+  .badge-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .badge {
+    background: rgba(22, 27, 34, 0.8);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon-purple);
+    padding: 8px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s;
+  }
+  .badge:hover { transform: translateX(2px); border-color: var(--neon-purple); }
+  .badge-icon { margin-right: 10px; font-size: 16px; }
+  .badge-content { flex: 1; }
+  .badge-title { font-weight: bold; font-size: 12px; color: #fff; margin-bottom: 2px; }
+  .badge-desc { font-size: 10px; color: var(--text-dim); }
+
+  /* Progress Bars */
+  .progress-section {
+    margin-top: 20px;
+    border-top: 1px dashed var(--border);
+    padding-top: 15px;
+  }
+  .stat-row {
+    margin-bottom: 8px;
+  }
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 3px;
+    color: var(--text-dim);
+  }
+  .progress-track {
+    height: 6px;
+    background: #21262d;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    position: relative;
+  }
+  /* Scanlines overlay */
+  .scanlines {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.3;
+  }
+  
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: monospace;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="card-container">
+  <div class="scanlines"></div>
+  <div class="pixel-corners">
+    <div class="pixel-corner tl"></div>
+    <div class="pixel-corner tr"></div>
+    <div class="pixel-corner bl"></div>
+    <div class="pixel-corner br"></div>
+  </div>
+
+  <div class="header">
+    <div class="avatar">👾</div>
+    <div class="player-info">
+      <div class="level">LV.24 <span style="color:#fff">→</span> LV.25</div>
+      <h1>ID: 小莫</h1>
+      <div class="job">CLASS: 搞钱探索者 / 养成系操盘手</div>
+      <div class="keyword-tag">祛魅 · 觉醒 · 肉身入局</div>
+    </div>
+  </div>
+
+  <div class="drops-section">
+    <div class="section-title">LOOT & DROPS // 年度掉落</div>
+    <div class="drop-grid">
+      <div class="drop-item">
+        <span class="drop-label">SSR / 核心战绩</span>
+        <span class="drop-val ssr">百万美金项目操盘</span>
+      </div>
+      <div class="drop-item">
+        <span class="drop-label">DATA / 认知腌制</span>
+        <span class="drop-val">208小时播客输入</span>
+      </div>
+      <div class="drop-item">
+        <span class="drop-label">SOCIAL / 链接节点</span>
+        <span class="drop-val">200+ 新好友连接</span>
+      </div>
+      <div class="drop-item">
+        <span class="drop-label">NETWORK / 核心人脉</span>
+        <span class="drop-val" style="color:var(--neon-blue)">涛哥 / 米杰 / 阿明哥</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="drops-section">
+    <div class="section-title">MEMORY LOGS // 年度名场面</div>
+    <div class="moments-list">
+      <div class="moment-row">
+        <span class="moment-icon">📸</span>
+        <span>涛哥错版To签 & 嘟嘴照 (向上社交破壁)</span>
+      </div>
+      <div class="moment-row">
+        <span class="moment-icon">🚌</span>
+        <span>惠州/杭州独自漫游 (解锁孤狼成就)</span>
+      </div>
+      <div class="moment-row">
+        <span class="moment-icon">🌙</span>
+        <span>凌晨3:30的PPT渡劫 (痛过才懂边界)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="drops-section">
+    <div class="section-title">ACHIEVEMENTS // 成就勋章</div>
+    <div class="badge-grid">
+      <div class="badge">
+        <div class="badge-icon">💰</div>
+        <div class="badge-content">
+          <div class="badge-title">闭环初跑者</div>
+          <div class="badge-desc">解锁条件：跑通CPS与虚拟资料变现，验证“信息差=钱”</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">🐺</div>
+        <div class="badge-content">
+          <div class="badge-title">孤狼行者</div>
+          <div class="badge-desc">解锁条件：独自旅行，享受随机性与自我掌控</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">🤝</div>
+        <div class="badge-content">
+          <div class="badge-title">向上社交破壁人</div>
+          <div class="badge-desc">解锁条件：从听众变志愿者/知识库主理，深度链接大佬</div>
+        </div>
+      </div>
+      <div class="badge">
+        <div class="badge-icon">🏠</div>
+        <div class="badge-content">
+          <div class="badge-title">家庭话语权</div>
+          <div class="badge-desc">解锁条件：带父母消费升级，拿回决策方向盘</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="stat-row">
+      <div class="stat-header"><span>技能复利 (AI/项目管理)</span><span>70%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:70%; background:var(--neon-blue)"></div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-header"><span>人际复利 (高价值链接)</span><span>85%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:85%; background:var(--neon-purple)"></div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-header"><span>金钱复利 (副业起步)</span><span>30%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:30%; background:var(--neon-orange)"></div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-header"><span>知行合一 (等待爆发)</span><span>40%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:40%; background:var(--neon-green)"></div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    PRESS START TO CONTINUE [2026]
+  </div>
+</div>
+
+</body>
+</html>
