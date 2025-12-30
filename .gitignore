@@ -1,0 +1,5 @@
+# Ignore all HTML files by default
+*.html
+
+# Exception: Keep the Pixel version
+!年度复盘_像素版.html
